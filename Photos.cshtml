@@ -1,0 +1,38 @@
+﻿@{
+    Page.Title = "Photos";
+
+    var db = Database.Open("bakery");
+    var productId = UrlData[0].AsInt();
+    var selected = db.Query("SELECT PR.ID, PR.Price, PR.Description, PR.Name, PH.ImageName FROM PRODUCTS PR JOIN PHOTOS PH ON PR.ID = PH.ProductID WHERE ID = @0 and FEATURED = 1", productId).FirstOrDefault();
+    var photos = db.Query("SELECT ProductID, ImageName FROM PHOTOS WHERE ProductID = @0", productId).ToList();
+}
+
+<!--<h1>More Photos!</h1>-->
+
+<div id="productsWrapper">
+      <h3>@selected.name</h3>
+    <ul id="products">
+        @foreach (var p in photos) {
+            <li class="product">
+                <a href="~/order/@productId" title="Order @selected.Name">
+                    <img class="hide-from-desktop" src="~/Images/Products/Thumbnails/@p.ImageName" alt="Image of @selected.Name" />
+                 </a>   
+                    <div class="productInfo"><a href="~/Images/Products/Large/@p.ImageName" target="_blank">
+                        <img class="product-image hide-from-mobile" src="~/Images/Products/Thumbnails/@p.ImageName" alt="Image of @selected.Name" />
+                        </a>
+                    </div>         
+            </li>
+        }
+    </ul>
+     
+</div>
+<div id="productDetails">
+  <p class="description">@selected.description</p>
+                       <p class="price hide-from-desktop">$@string.Format("{0:f}", selected.price)</p>  
+    
+                <!-- Desktop only -->
+                <div class="action  hide-from-mobile">
+                   <p class="price">$@string.Format("{0:f}", selected.price)</p>
+                    <a class="order-button" href="~/order/@productId" title="Order @selected.name">Order Now</a>
+                </div>   
+</div>
